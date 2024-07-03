@@ -17,13 +17,14 @@ typedef struct fileData {
     int count;
 } fileData;
 
+
 // Funcion para leer un archivo CSV
 void read_csv(const char *filename, dataGen **data, int *count) {
     // Se abre el archivo para leerlo
     FILE *file = fopen(filename, "r");
     // Verifica que fopen es igual a NULL hubo un error abriendo el archivo
     if (file == NULL) {
-        perror("Error abriendo el archivo");
+        fprintf(stderr, "Error abriendo el archivo: %s\n", filename);
         return;
     }
     // Para leer cada linea del archivo
@@ -90,43 +91,70 @@ void data_matrix(const fileData *files_data, int num_files, double matrix[24][7]
 }
 
 int main() {
-    // Se define la lista de archivoss por leer
-    const char *filenames[] = {"G-06112023.csv", "G-07112023.csv","G-08112023.csv", "G-09112023.csv", "G-10112023.csv", "G-11112023.csv","G-12112023.csv"};
-    // La cantidad de archivos
-    int num_files = sizeof(filenames) / sizeof(filenames[0]);
+    // Se define la primera lista de archivos por leer
+    const char *filenames1[] = {"G-06112023.csv", "G-07112023.csv", "G-08112023.csv", "G-09112023.csv", "G-10112023.csv", "G-11112023.csv", "G-12112023.csv"};
+    int num_gen = sizeof(filenames1) / sizeof(filenames1[0]);
 
     // Arreglo de estructuras para almacenar los datos de los archivos
-    fileData *files_data = malloc(num_files * sizeof(fileData));
+    fileData *files_gen = malloc(num_gen * sizeof(fileData));
 
     // Se llama la funcion para leer multiples archivos CSV
-    read_multiple_csv(filenames, num_files, files_data);
+    read_multiple_csv(filenames1, num_gen, files_gen);
 
-    // Definir matriz 24x7
-    double matrix[24][7] = {0};
+    // Definir la primera matriz 24x7
+    double matrix_gen[24][7] = {0};
 
-    // Llenar la matriz con los datos de generacion
-    data_matrix(files_data, num_files, matrix);
+    // Llenar la primera matriz con los datos de generacion
+    data_matrix(files_gen, num_gen, matrix_gen);
 
+    // Se define la segunda lista de archivos por leer
+    const char *filenames2[] = {"D-06112023.csv", "D-07112023.csv", "D-08112023.csv", "D-09112023.csv", "D-10112023.csv", "D-11112023.csv", "D-12112023.csv"};
+    int num_dem= sizeof(filenames2) / sizeof(filenames2[0]);
+
+    // Arreglo de estructuras para almacenar los datos de los archivos
+    fileData *files_dem = malloc(num_dem * sizeof(fileData));
+
+    // Se llama la funcion para leer multiples archivos CSV
+    read_multiple_csv(filenames2, num_dem, files_dem);
+
+    // Definir la segunda matriz 24x7
+    double matrix_dem[24][7] = {0};
+
+    // Llenar la segunda matriz con los datos de demanda
+    data_matrix(files_dem, num_dem, matrix_dem);
 
     // Abrir archivo de salida para hacer prueba que se realiza el registro de los datos
     FILE *test_file = fopen("prueba_salida.txt", "w");
     if (test_file == NULL) {
         perror("Error abriendo el archivo de salida");
-        free(files_data);
+        free(files_gen);
+        free(files_dem);
         return 1;
     }
 
-    // Escribir la matriz en el archivo de salida
+    // Escribir la primera matriz en el archivo de salida
+    fprintf(test_file, "Primera Matriz:\n");
     for (int row = 0; row < 24; row++) {
         for (int col = 0; col < 7; col++) {
-            fprintf(test_file, "%f ", matrix[row][col]);
+            fprintf(test_file, "%f ", matrix_gen[row][col]);
+        }
+        fprintf(test_file, "\n");
+    }
+
+    // Escribir la segunda matriz en el archivo de salida
+    fprintf(test_file, "\nSegunda Matriz:\n");
+    for (int row = 0; row < 24; row++) {
+        for (int col = 0; col < 7; col++) {
+            fprintf(test_file, "%f ", matrix_dem[row][col]);
         }
         fprintf(test_file, "\n");
     }
 
     fclose(test_file); // Cerrar el archivo de salida
-    // Se libera la memoria del arreglo
-    free(files_data);
+
+    // Liberar memoria
+    free(files_gen);
+    free(files_dem);
 
     return 0;
 }
