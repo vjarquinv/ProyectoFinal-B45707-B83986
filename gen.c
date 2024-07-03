@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ROWS 24
+#define COLS 7
+
 // Definicion de la estructura de los datos de los archivos .csv
 typedef struct dataGen{
     char hour[10]; // array de caracteres para almacenar la hora
@@ -72,13 +75,13 @@ void read_multiple_csv(const char **filenames, int num_files, fileData *files_da
 }
 
 // Funcion para llenar matriz con la segunda columna de los datos de generacion
-void data_matrix(const fileData *files_data, int num_files, double matrix[24][7]){
+void data_matrix(const fileData *files_data, int num_files, double matrix[ROWS][COLS]){
     // Se recorre las columnas de los archivos
-    for (int col = 0; col < num_files; col ++){
+    for (int col = 0; col < num_files; col++) {
         // Se recorre las filas de la matriz 
-        for (int row = 0; row < 24; row++){
+        for (int row = 0; row < ROWS; row++) {
             // Se verifica si hay datos suficientes en el archivo
-            if (row < files_data[col].count){
+            if (row < files_data[col].count) {
                 // Se guarda el valor de MW en la matriz
                 matrix[row][col] = files_data[col].data[row].dataMW;
             }
@@ -89,6 +92,47 @@ void data_matrix(const fileData *files_data, int num_files, double matrix[24][7]
         }
     }
 }
+
+// Funcion para la regresion lineal
+void linear_reg(double *x, double *y, int n, double *a, double *b){
+    // Se declaran las variables para las sumatorias
+    double sum_x = 0.0, sum_y = 0.0, sum_xy = 0.0, sum_x2 = 0.0;
+    // Se recorre los datos dados y acumula los datos de las sumatorias
+    for(int i = 0; i < n; i++){
+        sum_x += x[i];
+        sum_y += y[i];
+        sum_xy += x[i]*y[i];
+        sum_x2 += x[i]*x[i];
+    }
+    // Se calcula el coeficiente b
+    *b = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x);
+    // Se calcula el coeficiente a
+    *a = (sum_y - (*b) * sum_x) / n;
+}
+
+// Funcion para predecir la demanda 
+void predict_dem(double matrix_gen[ROWS][COLS], double matrix_dem[ROWS][COLS], double predictions[ROWS]){
+    // Se recorren las 24 horas
+    for(int hour = 0; hour < 24; hour++){
+        // Se inicializa los coeficientes a y b
+        double a, b;
+        // Arrays temporales para almacenar los datos de generacion y demanda en la hora actual
+        double gen[COLS], dem[COLS];
+        // Se extraen los datos de la matrices originales 
+        for (int day = 0; day < 7; day++){
+            gen[day] = matrix_gen[hour][day];
+            dem[day] = matrix_dem[hour][day];
+        }
+        /*Se calcula la regresion lineal pasando los arrays de generacion y demanda, la cantidad de dias
+        y los punteros *a y *b para calcular los coeficientes */ 
+        linear_reg(gen, dem, 7, &a, &b);
+        /*Se calcula la demanda con la formula de la recta de regresion , donde se usa la matriz_gen del ultimo
+        dia para hacer la predicion y se guardan los datos en un array */
+        predictions[hour] = a + b * matrix_gen[hour][7];
+    }
+
+}
+
 
 int main() {
     // Se define la primera lista de archivos por leer
@@ -120,8 +164,14 @@ int main() {
     // Definir la segunda matriz 24x7
     double matrix_dem[24][7] = {0};
 
-    // Llenar la segunda matriz con los datos de demanda
+    // Llenar la primera matriz con los datos de generacion
     data_matrix(files_dem, num_dem, matrix_dem);
+
+    double predictions[24] = {0};
+    predict_dem(matrix_gen, matrix_dem, predictions);
+
+
+
 
     // Abrir archivo de salida para hacer prueba que se realiza el registro de los datos
     FILE *test_file = fopen("prueba_salida.txt", "w");
@@ -132,22 +182,10 @@ int main() {
         return 1;
     }
 
-    // Escribir la primera matriz en el archivo de salida
-    fprintf(test_file, "Primera Matriz:\n");
-    for (int row = 0; row < 24; row++) {
-        for (int col = 0; col < 7; col++) {
-            fprintf(test_file, "%f ", matrix_gen[row][col]);
-        }
-        fprintf(test_file, "\n");
-    }
-
     // Escribir la segunda matriz en el archivo de salida
-    fprintf(test_file, "\nSegunda Matriz:\n");
-    for (int row = 0; row < 24; row++) {
-        for (int col = 0; col < 7; col++) {
-            fprintf(test_file, "%f ", matrix_dem[row][col]);
-        }
-        fprintf(test_file, "\n");
+    fprintf(test_file, "\nPrediciones de demanda:\n");
+    for (int hour = 0; hour < 24; hour ++) {
+            fprintf(test_file, "Hora %02d: %f\n", hour, predictions[hour]);
     }
 
     fclose(test_file); // Cerrar el archivo de salida
