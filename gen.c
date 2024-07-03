@@ -53,7 +53,6 @@ void read_csv(const char *filename, dataGen **data, int *count) {
 
         (*count)++; // Se incrementa hasta leer todo el archivo
     }
-
     fclose(file); // Se cierra el archivo
 }
 
@@ -71,6 +70,25 @@ void read_multiple_csv(const char **filenames, int num_files, fileData *files_da
     }
 }
 
+// Funcion para llenar matriz con la segunda columna de los datos de generacion
+void data_matrix(const fileData *files_data, int num_files, double matrix[24][7]){
+    // Se recorre las columnas de los archivos
+    for (int col = 0; col < num_files; col ++){
+        // Se recorre las filas de la matriz 
+        for (int row = 0; row < 24; row++){
+            // Se verifica si hay datos suficientes en el archivo
+            if (row < files_data[col].count){
+                // Se guarda el valor de MW en la matriz
+                matrix[row][col] = files_data[col].data[row].dataMW;
+            }
+            else{
+                // En el caso que hayan datos insuficientes lo rellena con cero
+                matrix[row][col] = 0.0;
+            }
+        }
+    }
+}
+
 int main() {
     // Se define la lista de archivoss por leer
     const char *filenames[] = {"G-06112023.csv", "G-07112023.csv","G-08112023.csv", "G-09112023.csv", "G-10112023.csv", "G-11112023.csv","G-12112023.csv"};
@@ -83,6 +101,13 @@ int main() {
     // Se llama la funcion para leer multiples archivos CSV
     read_multiple_csv(filenames, num_files, files_data);
 
+    // Definir matriz 24x7
+    double matrix[24][7] = {0};
+
+    // Llenar la matriz con los datos de generacion
+    data_matrix(files_data, num_files, matrix);
+
+
     // Abrir archivo de salida para hacer prueba que se realiza el registro de los datos
     FILE *test_file = fopen("prueba_salida.txt", "w");
     if (test_file == NULL) {
@@ -91,14 +116,12 @@ int main() {
         return 1;
     }
 
-    // Escribir los datos en el archivo de salida
-    for (int i = 0; i < num_files; i++) {
-        fprintf(test_file, "Datos del archivo: %s\n", files_data[i].filename);
-        for (int j = 0; j < files_data[i].count; j++) {
-            fprintf(test_file, "Hour: %s, Number: %f\n", files_data[i].data[j].hour, files_data[i].data[j].dataMW);
+    // Escribir la matriz en el archivo de salida
+    for (int row = 0; row < 24; row++) {
+        for (int col = 0; col < 7; col++) {
+            fprintf(test_file, "%f ", matrix[row][col]);
         }
         fprintf(test_file, "\n");
-        free(files_data[i].data); // Liberar la memoria para cada archivo
     }
 
     fclose(test_file); // Cerrar el archivo de salida
@@ -107,3 +130,4 @@ int main() {
 
     return 0;
 }
+
