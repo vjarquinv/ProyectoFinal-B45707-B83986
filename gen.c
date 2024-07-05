@@ -1,4 +1,4 @@
-// Proyecto Final -- Datos Generacion -- B45707 - B83986
+// Proyecto Final -- Datos Generacion y Demanda -- B45707 - B83986
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -195,8 +195,17 @@ int main() {
     fclose(test_file); // Cerrar el archivo de salida
 
     // Liberar memoria
+
+    for (int i = 0; i < num_gen; i++) {
+        free(files_gen[i].data);
+    }
     free(files_gen);
+
+    for (int i = 0; i < num_dem; i++) {
+        free(files_dem[i].data);
+    }
     free(files_dem);
+    
     free(data_real);
 
     return 0;
