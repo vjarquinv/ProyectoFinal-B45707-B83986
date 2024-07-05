@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define ROWS 24
 #define COLS 7
 
@@ -133,7 +134,6 @@ void predict_dem(double matrix_gen[ROWS][COLS], double matrix_dem[ROWS][COLS], d
 
 }
 
-
 int main() {
     // Se define la primera lista de archivos por leer
     const char *filenames1[] = {"G-06112023.csv", "G-07112023.csv", "G-08112023.csv", "G-09112023.csv", "G-10112023.csv", "G-11112023.csv", "G-12112023.csv"};
@@ -178,10 +178,8 @@ int main() {
     read_csv(file_dem_real, &data_real, &count_real);
 
 
-
-
     // Abrir archivo de salida para hacer prueba que se realiza el registro de los datos
-    FILE *test_file = fopen("prueba_salida.txt", "w");
+    FILE *test_file = fopen("datos_demanda.csv", "w");
     if (test_file == NULL) {
         perror("Error abriendo el archivo de salida");
         free(files_gen);
@@ -191,11 +189,9 @@ int main() {
     }
 
     // Escribir la segunda matriz en el archivo de salida
-    fprintf(test_file, "\nDemanda real y prediciones (MW):\n");
     for (int hour = 0; hour < 24; hour ++) {
-            fprintf(test_file, "Hora: %02d, MW Reales: %f, MW Predichos: %f\n", hour, data_real[hour].dataMW,predictions[hour]);
+            fprintf(test_file, "%02d, %f, %f\n", hour, data_real[hour].dataMW,predictions[hour]);
     }
-
     fclose(test_file); // Cerrar el archivo de salida
 
     // Liberar memoria
