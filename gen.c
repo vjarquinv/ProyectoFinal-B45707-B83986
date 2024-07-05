@@ -170,6 +170,13 @@ int main() {
     double predictions[24] = {0};
     predict_dem(matrix_gen, matrix_dem, predictions);
 
+    // Leer el archivo "D-13112023.csv" que es la demanda real
+    const char *file_dem_real = "D-13112023.csv";
+    dataGen *data_real = NULL;
+    int count_real = 0;
+
+    read_csv(file_dem_real, &data_real, &count_real);
+
 
 
 
@@ -179,13 +186,14 @@ int main() {
         perror("Error abriendo el archivo de salida");
         free(files_gen);
         free(files_dem);
+        free(data_real);
         return 1;
     }
 
     // Escribir la segunda matriz en el archivo de salida
-    fprintf(test_file, "\nPrediciones de demanda:\n");
+    fprintf(test_file, "\nDemanda real y prediciones (MW):\n");
     for (int hour = 0; hour < 24; hour ++) {
-            fprintf(test_file, "Hora %02d: %f\n", hour, predictions[hour]);
+            fprintf(test_file, "Hora: %02d, MW Reales: %f, MW Predichos: %f\n", hour, data_real[hour].dataMW,predictions[hour]);
     }
 
     fclose(test_file); // Cerrar el archivo de salida
@@ -193,6 +201,7 @@ int main() {
     // Liberar memoria
     free(files_gen);
     free(files_dem);
+    free(data_real);
 
     return 0;
 }
