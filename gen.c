@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #define ROWS 24
 #define COLS 7
 
