@@ -1,4 +1,4 @@
-// Proyecto Final -- Grafica -- B45707 - B83986
+// Proyecto Final -- Grafica -- B45707 -- B83986
 
 #include <stdio.h>
 #include <stdlib.h>
