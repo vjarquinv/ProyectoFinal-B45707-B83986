@@ -153,7 +153,7 @@ void plot_graph(DataDem *data, size_t size) {
     // Se guarda el resultado en un archivo .png
     cairo_surface_write_to_png(surface, "pred_demanda.png");
 
-    // Se liberan los recursos
+    // Se liberan los recursos de cairo
     cairo_destroy(cr);
     cairo_surface_destroy(surface);
 }

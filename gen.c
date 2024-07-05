@@ -5,7 +5,6 @@
 #include <string.h>
 #include "pred_dem.h"
 
-
 #define ROWS 24
 #define COLS 7
 
