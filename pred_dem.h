@@ -30,25 +30,25 @@ typedef struct {
 
 // Declaraciones de funciones
 
-// Función para leer un archivo CSV
+// Funcion para leer un archivo CSV
 void read_csv(const char *filename, dataGen **data, int *count);
 
-// Función para leer múltiples archivos CSV y almacenarlos
+// Funcion para leer multiples archivos CSV y almacenarlos
 void read_multiple_csv(const char **filenames, int num_files, fileData *files_data);
 
-// Función para llenar matriz con la segunda columna de los datos de generación
+// Funcion para llenar matriz con la segunda columna de los datos de generacion
 void data_matrix(const fileData *files_data, int num_files, double matrix[ROWS][COLS]);
 
-// Función para la regresión lineal
+// Funcion para la regresion lineal
 void linear_reg(double *x, double *y, int n, double *a, double *b);
 
-// Función para predecir la demanda
+// Funcion para predecir la demanda
 void predict_dem(double matrix_gen[ROWS][COLS], double matrix_dem[ROWS][COLS], double predictions[ROWS]);
 
-// Función para leer un archivo CSV de demanda
+// Funcion para leer un archivo CSV de demanda
 void read_dem_csv(const char *filename_dem, DataDem **data, size_t *size);
 
-// Función para graficar la demanda real y predicha
+// Funcion para graficar la demanda real y predicha
 void plot_graph(DataDem *data, size_t size);
 
 #endif

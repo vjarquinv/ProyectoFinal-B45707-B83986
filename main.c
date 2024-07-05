@@ -77,13 +77,15 @@ int main() {
         free(files_dem[i].data);
     }
     free(files_dem);
-
     free(data_real);
 
+    // Se llaman el puntero de los datos y el tamaño 
     DataDem *data;
     size_t size;
 
+    // Se llama la funcion para leer el archivo
     read_dem_csv("datos_demanda.csv", &data, &size);
+    // Se llama la funcion que grafica
     plot_graph(data, size);
 
     free(data);

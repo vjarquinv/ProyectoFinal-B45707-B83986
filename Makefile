@@ -30,7 +30,7 @@ $(EXEC): $(OBJS)
 clean:
 	rm -f $(OBJS) $(EXEC) datos_demanda.csv pred_demanda.png
 
-# Marcado de dependencias
+# Dependencias
 gen.o: gen.c pred_dem.h
 main.o: main.c pred_dem.h
 graph.o: graph.c pred_dem.h
