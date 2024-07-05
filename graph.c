@@ -1,17 +1,14 @@
+// Proyecto Final -- Grafica -- B45707 - B83986
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <cairo.h>
 #include <math.h>
+#include "pred_dem.h"
 
 #define WIDTH 800
 #define HEIGHT 600
 
-// Definicion de la estructura de los datos del archivo .csv
-typedef struct {
-    double col1; // almacena los datos de la columna 1
-    double col2; // almacena los datos de la columna 2
-    double col3; // almacena los datos de la columna 3
-} DataDem;
 
 void read_dem_csv(const char *filename_dem, DataDem **data, size_t *size) {
     // Se abre el archivo para leerlo
@@ -159,16 +156,4 @@ void plot_graph(DataDem *data, size_t size) {
     // Se liberan los recursos
     cairo_destroy(cr);
     cairo_surface_destroy(surface);
-}
-
-int main() {
-    
-    DataDem *data;
-    size_t size;
-
-    read_dem_csv("datos_demanda.csv", &data, &size);
-    plot_graph(data, size);
-
-    free(data);
-    return EXIT_SUCCESS;
 }
