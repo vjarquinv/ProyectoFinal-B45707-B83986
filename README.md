@@ -23,8 +23,8 @@ Para instalar este proyecto, seguir los siguientes pasos:
 ## Uso
 Para utilizar el proyecto una vez lista la instalación, en la terminal:
 1. Compila el proyecto con make y se generan los archivos de salida.
-  ```bash
+  ```sh
   make
 2. Con make clean se limpian los archivos generados.
-  ```bash
+  ```sh
   make clean
